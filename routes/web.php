@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -15,24 +16,47 @@ use Inertia\Inertia;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
+    return inertia('Home');
+});
+
+Route::get('/users', function () {
+    return inertia('Users/Index', [
+        'users' => User::query()
+            ->when(request('search'), function ($query, $search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            })
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn($user) => [
+            'id' => $user->id,
+            'name' => $user->name
+        ]),
+        'filters' => request()
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+Route::get('/users/create', function () {
+    return Inertia::render('Users/Create');
 });
 
-require __DIR__.'/auth.php';
+Route::post('/users', function () {
+    $attributes = request()->validate([
+        'name' => 'required',
+        'email' => ['required', 'email', 'unique:users'],
+        'password' => 'required',
+    ]);
+
+    User::create($attributes);
+
+    // redirect
+    return redirect('/users');
+});
+
+Route::get('/settings', function () {
+    return inertia('Settings');
+});
+
+Route::post('/logout', function () {
+    dd(request('foo'));
+});
