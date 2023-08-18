@@ -1,5 +1,5 @@
 <script setup>
-import NavLink from "../Shared/NavLink.vue";
+import NavLink from "@/Shared/NavLink.vue";
 </script>
 
 <script>
@@ -17,6 +17,12 @@ import NavLink from "../Shared/NavLink.vue";
             </li>
             <li>
                 <NavLink href="/settings" :active="$page.component === 'Settings'">Settings</NavLink>
+            </li>
+
+            <li>
+                <NavLink href="/logout" method="post" as="button">
+                    Log Out
+                </NavLink>
             </li>
         </ul>
     </nav>

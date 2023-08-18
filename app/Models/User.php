@@ -31,6 +31,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'stripe_token'
     ];
 
     /**
@@ -42,4 +43,10 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    // $user->follows($thatOtherUser);
+    public function follows()
+    {
+
+    }
 }

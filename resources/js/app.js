@@ -15,7 +15,9 @@ createInertiaApp({
     resolve: (name) => {
         const pages = import.meta.glob('./Pages/**/*.vue', { eager: true })
         let page = pages[`./Pages/${name}.vue`]
-        page.default.layout = page.default.layout || Layout
+        if(page.default.layout === undefined) {
+            page.default.layout = page.default.layout || Layout
+        }
         return page
     }
     ,
@@ -27,9 +29,7 @@ createInertiaApp({
             .use(ZiggyVue, Ziggy)
             .mount(el);
     },
-    // progress: {
-    //     showSpinner: true
-    // },
+    progress: false,
 });
 
 // router.on('start', () => NProgress.start())
